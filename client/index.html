@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家庭家务管家</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">🧹 家庭家务管家</div>
+    <nav id="nav">
+      <button data-tab="dashboard" class="active">📊 概览</button>
+      <button data-tab="chores">🧺 家务任务</button>
+      <button data-tab="members">👨‍👩‍👧‍👦 成员</button>
+      <button data-tab="points">🏆 积分</button>
+      <button data-tab="calendar">📅 日历</button>
+      <button data-tab="logs">📜 记录</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 概览 -->
+    <section id="tab-dashboard" class="tab-panel active">
+      <h2>今日概览</h2>
+      <div id="stat-cards" class="stat-grid"></div>
+      <div class="dash-columns">
+        <div class="card">
+          <h3>成员贡献</h3>
+          <div id="dash-members"></div>
+        </div>
+        <div class="card">
+          <h3>近 7 天完成趋势</h3>
+          <div id="dash-trend" class="trend"></div>
+        </div>
+        <div class="card">
+          <h3>最新动态</h3>
+          <div id="dash-activity"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 家务任务 -->
+    <section id="tab-chores" class="tab-panel">
+      <div class="tab-head">
+        <h2>家务任务</h2>
+        <button id="btn-add-chore" class="btn primary">＋ 新增任务</button>
+      </div>
+      <div id="chore-filters" class="filter-bar"></div>
+      <div id="chore-summary" class="muted summary"></div>
+      <div id="chore-list" class="chore-list"></div>
+    </section>
+
+    <!-- 成员 -->
+    <section id="tab-members" class="tab-panel">
+      <div class="tab-head">
+        <h2>家庭成员</h2>
+        <button id="btn-add-member" class="btn primary">＋ 添加成员</button>
+      </div>
+      <div id="member-grid" class="member-grid"></div>
+    </section>
+
+    <!-- 积分 -->
+    <section id="tab-points" class="tab-panel">
+      <div class="tab-head">
+        <h2>积分奖励</h2>
+      </div>
+      <div class="points-layout">
+        <div class="card">
+          <h3>🏆 积分排行榜</h3>
+          <div id="leaderboard"></div>
+        </div>
+        <div class="card">
+          <h3>✋ 手动调整积分</h3>
+          <form id="adjust-form">
+            <label>成员<select id="adjust-member" required></select></label>
+            <label>积分变化（可为负）<input id="adjust-amount" type="number" step="1" placeholder="如 10 或 -5" required></label>
+            <label>原因（可选）<input id="adjust-reason" type="text" maxlength="40" placeholder="如：本周全勤奖励"></label>
+            <button type="submit" class="btn primary wide">确认调整</button>
+          </form>
+          <div class="rules">
+            <h4>积分规则</h4>
+            <ul>
+              <li>完成家务任务即可获得任务对应的积分；</li>
+              <li>每日 / 每周轮换任务打卡后自动转给下一位成员；</li>
+              <li>误打卡可「撤销」，积分自动扣回；</li>
+              <li>家长可在上方手动加减积分并注明原因。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 日历 -->
+    <section id="tab-calendar" class="tab-panel">
+      <div class="tab-head">
+        <h2>日历视图</h2>
+        <div class="cal-nav">
+          <button id="cal-prev" class="btn small">◀</button>
+          <span id="cal-title" class="cal-title"></span>
+          <button id="cal-next" class="btn small">▶</button>
+          <button id="cal-today" class="btn small">今天</button>
+        </div>
+      </div>
+      <div class="card">
+        <div id="calendar-grid" class="calendar-grid"></div>
+      </div>
+      <div class="card">
+        <h3 id="cal-detail-title">选择日期</h3>
+        <div id="cal-detail-list" class="cal-detail-list"></div>
+      </div>
+    </section>
+
+    <!-- 完成记录 -->
+    <section id="tab-logs" class="tab-panel">
+      <div class="tab-head">
+        <h2>完成记录</h2>
+      </div>
+      <div class="filter-bar">
+        <select id="log-type">
+          <option value="">全部类型</option>
+          <option value="complete">✅ 完成打卡</option>
+          <option value="adjust">⭐ 积分调整</option>
+          <option value="undo">↩️ 撤销记录</option>
+          <option value="member">👨‍👩‍👧 成员变动</option>
+        </select>
+        <select id="log-member"><option value="">全部成员</option></select>
+      </div>
+      <div id="log-list" class="log-list"></div>
+    </section>
+  </main>
+
+  <!-- 成员弹窗 -->
+  <dialog id="member-dialog" class="modal">
+    <form id="member-form" novalidate>
+      <h3 id="member-dialog-title">添加成员</h3>
+      <label>姓名<input id="member-name" required maxlength="12" placeholder="如：爷爷"></label>
+      <div class="form-row">
+        <label>头像 emoji<input id="member-avatar" maxlength="4" value="🙂"></label>
+        <label>主题色<input id="member-color" type="color" value="#4f7df9"></label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="member-cancel">取消</button>
+        <button type="submit" class="btn primary" id="member-save">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 任务弹窗 -->
+  <dialog id="chore-dialog" class="modal">
+    <form id="chore-form" novalidate>
+      <h3 id="chore-dialog-title">新增任务</h3>
+      <div class="form-row">
+        <label>任务名称<input id="chore-title" required maxlength="20" placeholder="如：洗碗"></label>
+        <label>图标<input id="chore-icon" maxlength="4" value="🧹"></label>
+      </div>
+      <label>描述（可选）<textarea id="chore-desc" rows="2" maxlength="60" placeholder="补充说明"></textarea></label>
+      <div class="form-row">
+        <label>指派给<select id="chore-assignee"></select></label>
+        <label>轮换方式<select id="chore-rotation">
+          <option value="none">不轮换</option>
+          <option value="daily">每日轮换</option>
+          <option value="weekly">每周轮换</option>
+        </select></label>
+      </div>
+      <div class="form-row">
+        <label>积分奖励（1~100）<input id="chore-points" type="number" min="1" max="100" step="1" value="10"></label>
+        <label>截止日期<input id="chore-due" type="date"></label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="chore-cancel">取消</button>
+        <button type="submit" class="btn primary" id="chore-save">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast-wrap" aria-live="polite"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
