@@ -1,0 +1,23 @@
+{
+  "name": "household-chores",
+  "version": "1.0.0",
+  "description": "家庭家务管家：成员管理、家务任务分配与轮换、积分奖励、完成打卡、完成记录、日历视图与统计",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "reset:data": "node server/reset-data.js"
+  },
+  "keywords": [
+    "family",
+    "chores",
+    "express",
+    "points"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
